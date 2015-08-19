@@ -1,0 +1,31 @@
+---
+- name: Prepare Install
+  yum: name={{ item }}
+  with_items:
+    - gcc
+    - openssl-devel
+    - libffi-devel
+    - gcc-c++
+    - make
+    - git
+    - bzip2-devel
+    - zlib-devel
+    - readline-devel
+    - sqlite-devel 
+
+- name: Install epel
+  yum: name=epel-release
+
+- name: Install ius
+  yum: name=http://dl.iuscommunity.org/pub/ius/stable/CentOS/6/x86_64/ius-release-1.0-14.ius.centos6.noarch.rpm
+
+- name: Install Python 2.7
+  yum: name={{ item }}
+  with_items:
+    - python27
+    - python27-devel
+    - python27-setuptools
+    - python27-pip
+
+- name: Update PIP
+  shell: easy_install-2.7 --upgrade pip

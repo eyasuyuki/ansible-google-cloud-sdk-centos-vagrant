@@ -1,0 +1,22 @@
+---
+- name: Install PyOpenSSL
+  pip: name=pyopenssl state=latest executable=pip2.7
+
+- name: Check Coogle Cloud SDK
+  stat: path=/usr/local/google-cloud-sdk
+  register: sdk
+- name: Install Google Cloud SDK
+  environment:
+    CLOUDSDK_CORE_DISABLE_PROMPTS: 1
+    CLOUDSDK_INSTALL_DIR: /usr/local
+    CLOUDSDK_PYTHON: /usr/bin/python2.7
+  shell: curl https://sdk.cloud.google.com | bash
+  when: not sdk.stat.exists
+
+- name: Check CLOUDSDK_PYTHON
+  shell: grep "CLOUDSDK_PYTHON" ~/.bashrc
+  register: python_version
+  ignore_errors: yes
+- name: Add CLOUDSDK_PYTHON
+  shell: echo export CLOUDSDK_PYTHON=/usr/bin/python2.7 >> ~/.bashrc
+  when: python_version.rc != 0
