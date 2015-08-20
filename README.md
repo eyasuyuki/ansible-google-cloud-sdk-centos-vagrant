@@ -33,4 +33,10 @@ ansible-playbook setup.yml -vvvv --private-key=.vagrant/machines/default/virtual
 It installs only root user, without vagrant user.
 
 Note: CLOUDSDK_INSTALL_DIR environment value is set to /usr/local in roles/sdk/tasks/main.yml.
-If you want to install to another directory, please put you own.
+If you want to install to another directory, please put your own.
+
+# Google Cloud Account Authentication
+
+```
+gcloud auth login --no-launch-browser
+```
