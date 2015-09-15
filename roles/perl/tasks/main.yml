@@ -1,0 +1,52 @@
+---
+- name: Install gitflow, cpan
+  yum: name={{ item }} state=present
+  with_items:
+    - gcc
+    - gitflow
+    - perl
+    - perl-CPAN
+    
+- name: Check cpanm
+  shell: perl -MApp::cpanminus -e1
+  register: result
+  ignore_errors: true
+- name:  Install cpanm
+  shell: curl -L http://cpanmin.us | perl - App::cpanminus
+  when:  result|failed
+
+- name: Install dependency modules of Crypt::OpenSSL::PKCS12
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+    LC_ALL: "en_US.UTF-8"
+  cpanm: name={{ item }}
+  with_items:
+    - Module::Install
+    - Test::Pod::Coverage
+
+- name: Check pkcs12
+  shell: perl -MCrypt::OpenSSL::PKCS12 -e ''
+  register: pkcs
+  ignore_errors: yes
+- name: Clone perl-crypt-openssl-pkcs12 patched
+  git: repo=https://github.com/Songmu/perl-crypt-openssl-pkcs12.git ssh_opts="-o StrictHostKeyChecking=no" clone=yes dest=/tmp/pkcs12
+  when: pkcs.rc != 0
+- name: build pkcs12
+  environment:
+    LC_ALL: "en_US.UTF-8"
+    PERL_MM_USE_DEFAULT: 1
+    PERL_AUTOINSTALL: "--defaultdeps"
+  shell: cd /tmp/pkcs12 &&
+         git flow init -d &&
+         git flow feature pull origin repacking &&
+         perl Makefile.PL &&
+         make &&
+         make test &&
+         make install
+  when: pkcs.rc != 0
+
+- name: Install Google::BigQuery
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+    LC_ALL: "en_US.UTF-8"
+  cpanm: name=Google::BigQuery
