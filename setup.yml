@@ -4,5 +4,6 @@
   roles:
     - python27
     - sdk
+    - perl
 
 
