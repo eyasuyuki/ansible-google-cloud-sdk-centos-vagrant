@@ -4,5 +4,4 @@
   roles:
     - python27
     - sdk
-
-
+    - tdagent
