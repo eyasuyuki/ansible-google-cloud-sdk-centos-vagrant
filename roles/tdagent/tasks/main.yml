@@ -1,0 +1,27 @@
+---
+- name: Copy td.repo
+  copy: src=td.repo dest=/etc/yum.repos.d/td.repo
+
+- name: Install td-agent
+  yum: name=td-agent state=latest
+
+- name: Install Plugins
+#  gem: name={{ item }} executable=/opt/td-agent/embedded/bin/fluent-gem state=latest
+  shell: /opt/td-agent/embedded/bin/fluent-gem install --no-ri --no-rdoc {{ item }} -V
+  with_items:
+    - apache-loggen
+    - fluent-plugin-flowcounter-simple
+    - fluent-plugin-bigquery
+    - fluent-plugin-google-cloud-storage
+
+- name: Copy td-agent.conf
+  copy: src=td-agent.conf dest=/etc/td-agent/td-agent.conf
+
+- name: Copy key file
+  copy: src=example.p12 dest=/etc/td-agent/example.p12
+
+- name: Copy json schema
+  copy: src=access_log.json dest=/etc/td-agent/access_log.json
+
+- name: Start td-agent
+  service: name=td-agent enabled=yes state=restarted
