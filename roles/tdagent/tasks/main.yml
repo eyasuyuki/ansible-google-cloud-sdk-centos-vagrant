@@ -17,6 +17,9 @@
 - name: Copy td-agent.conf
   copy: src=td-agent.conf dest=/etc/td-agent/td-agent.conf
 
+- name: Copy apache-loggen
+  copy: src=apache-loggen dest=/opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/apache-loggen-0.0.4/bin/apache-loggen
+
 - name: Copy key file
   copy: src=example.p12 dest=/etc/td-agent/example.p12
 
