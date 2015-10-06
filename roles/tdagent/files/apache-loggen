@@ -1,0 +1,19 @@
+#!/opt/td-agent/embedded/bin/ruby
+# coding: utf-8
+
+require 'time'
+require 'apache-loggen/base'
+require 'securerandom'
+
+class MyGen < LogGenerator::Apache
+  def format(record, config)
+    record['time'] = Time.now.to_f
+    record['uuid'] = SecureRandom.uuid
+    if config[:json] then
+      return record.to_json + "\n"
+    else
+      return %[#{record['host']} - #{record['user']} [#{Time.at(record['time']).strftime('%d/%b/%Y:%H:%M:%S %z')}] "#{record['method']} #{record['path']} HTTP/1.1" #{record['code']} #{record['size']} "#{record['referer']}" "#{record['agent']}" #{record['uuid']}\n]
+    end
+  end
+end
+LogGenerator.generate(nil, MyGen.new)
